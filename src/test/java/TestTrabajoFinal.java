@@ -2,7 +2,12 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.support.ui.ExpectedCondition;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
+import org.openqa.selenium.support.ui.WebDriverWait;
+
+import java.time.Duration;
 
 public class TestTrabajoFinal {
     public static void main(String[] args) throws InterruptedException {
@@ -23,7 +28,9 @@ public class TestTrabajoFinal {
     }
 
     public static void addToCartPrenda(WebDriver chromeDriver) throws InterruptedException {
-        Thread.sleep(2000);
+        WebDriverWait wait = new WebDriverWait(chromeDriver, Duration.ofSeconds(20));
+
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("div[option-label='Blue']")));
 
         WebElement divTalle = chromeDriver.findElement(By.cssSelector("div[option-label='L']"));
         divTalle.click();
@@ -36,17 +43,21 @@ public class TestTrabajoFinal {
         qtyInput.sendKeys("2");
 
         WebElement prendaButton = chromeDriver.findElement(By.cssSelector("button[title='Add to Cart']"));
+        Thread.sleep(2000);
         prendaButton.click();
 
-        Thread.sleep(3000);
-
-        WebElement shoppingCartLink = chromeDriver.findElement(By.xpath("//a[contains(text(), 'shopping cart')]"));
+        WebElement shoppingCartLink = wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//a[contains(text(), 'shopping cart')]")));
         shoppingCartLink.click();
 
     }
 
     public static void llenarFormularioEnvio(WebDriver chromeDriver) throws InterruptedException {
-        Thread.sleep(7000);
+        WebDriverWait wait = new WebDriverWait(chromeDriver, Duration.ofSeconds(20));
+
+        WebElement tableShipping = wait.until(ExpectedConditions.presenceOfElementLocated(By.className("table-checkout-shipping-method")));
+        WebElement trShipping = wait.until(ExpectedConditions.presenceOfNestedElementLocatedBy(tableShipping, By.cssSelector("tbody tr:first-child")));
+        Thread.sleep(3000);
+        trShipping.click();
 
         WebElement fieldSetEmail = chromeDriver.findElement(By.id("customer-email-fieldset"));
         WebElement emailInput = fieldSetEmail.findElement(By.cssSelector("input[name='username']"));
@@ -89,28 +100,23 @@ public class TestTrabajoFinal {
         phoneInput.clear();
         phoneInput.sendKeys("3455226666");
 
-        Thread.sleep(4000);
-
-        WebElement tableShipping = chromeDriver.findElement(By.className("table-checkout-shipping-method"));
-        WebElement trShipping = tableShipping.findElement(By.cssSelector("tbody tr:first-child"));
-        trShipping.click();
-
         WebElement nextButton = chromeDriver.findElement(By.cssSelector("button[data-role='opc-continue']"));
         nextButton.click();
     }
 
     public static void validacionesPurchase(WebDriver chromeDriver) {
         try{
-            Thread.sleep(5000);
             int cantErrores = 0;
+            WebDriverWait wait = new WebDriverWait(chromeDriver, Duration.ofSeconds(20));
+
+            WebElement divRegister = wait.until(ExpectedConditions.presenceOfElementLocated(By.id("registration")));
+            WebElement registerLink = wait.until(ExpectedConditions.presenceOfNestedElementLocatedBy(divRegister, By.tagName("a")));
+
             WebElement title = chromeDriver.findElement(By.tagName("h1"));
 
             WebElement divOrder = chromeDriver.findElement(By.className("checkout-success"));
             WebElement spanNumberOrder = divOrder.findElement(By.cssSelector("p > span"));
             WebElement shoppingLink = divOrder.findElement(By.tagName("a"));
-
-            WebElement divRegister = chromeDriver.findElement(By.id("registration"));
-            WebElement registerLink = divRegister.findElement(By.tagName("a"));
 
             String titleText = title.getText();
             String orderNumberText = spanNumberOrder.getText();
@@ -122,14 +128,14 @@ public class TestTrabajoFinal {
                 System.out.println("TITULO X");
             }
 
-            if(shoppingLink.isEnabled()) {
+            if(shoppingLink != null && shoppingLink.isEnabled()) {
                 System.out.println("BOTON SHOPPING ✔");
             } else {
                 cantErrores++;
                 System.out.println("BOTON SHOPPING X");
             }
 
-            if(registerLink.isDisplayed()) {
+            if(registerLink != null && registerLink.isDisplayed()) {
                 System.out.println("BOTON CUENTA NUEVA ✔");
             } else {
                 cantErrores++;
