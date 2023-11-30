@@ -46,7 +46,7 @@ public class TestTrabajoFinal {
     }
 
     public static void llenarFormularioEnvio(WebDriver chromeDriver) throws InterruptedException {
-        Thread.sleep(5000);
+        Thread.sleep(7000);
 
         WebElement fieldSetEmail = chromeDriver.findElement(By.id("customer-email-fieldset"));
         WebElement emailInput = fieldSetEmail.findElement(By.cssSelector("input[name='username']"));
